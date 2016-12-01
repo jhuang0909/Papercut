@@ -79,6 +79,7 @@
     <Compile Include="Configuration\IMessagePathConfigurator.cs" />
     <Compile Include="Configuration\IPathTemplatesProvider.cs" />
     <Compile Include="Configuration\MessagePathConfigurator.cs" />
+    <Compile Include="Configuration\PapercutPerformanceCounters.cs" />
     <Compile Include="Events\AppForceShutdownEvent.cs" />
     <Compile Include="Events\AppProcessExchangeEvent.cs" />
     <Compile Include="Events\AutofacPublishEvent.cs" />

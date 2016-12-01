@@ -28,7 +28,7 @@ namespace Papercut.Message
     using Papercut.Core.Message;
 
     using Serilog;
-
+    using System.Diagnostics;
     public class MessageRepository
     {
         public const string MessageFileSearchPattern = "*.eml";
@@ -37,10 +37,20 @@ namespace Papercut.Message
 
         readonly IMessagePathConfigurator _messagePathConfigurator;
 
+        PerformanceCounter _msgCountPC;
+        PerformanceCounter _msgRatePC;
+
         public MessageRepository(ILogger logger, IMessagePathConfigurator messagePathConfigurator)
         {
             _logger = logger;
             _messagePathConfigurator = messagePathConfigurator;
+
+            // JHUANG : Always start with 0
+            _msgCountPC = new PerformanceCounter(PapercutPerformanceCounters.PapercutPCC, PapercutPerformanceCounters.PapercutMessageCountPC, false);
+            _msgCountPC.RawValue = 0;
+
+            _msgRatePC = new PerformanceCounter(PapercutPerformanceCounters.PapercutPCC, PapercutPerformanceCounters.PapercutMessageRatePC, false);
+            _msgRatePC.RawValue = 0;
         }
 
         public bool DeleteMessage(MessageEntry entry)
@@ -68,6 +78,7 @@ namespace Papercut.Message
             }
 
             File.Delete(entry.File);
+
             return true;
         }
 
@@ -109,6 +120,12 @@ namespace Papercut.Message
 
         public string SaveMessage(string output)
         {
+            _msgCountPC.Increment();
+            _msgRatePC.Increment();
+
+            if (_msgCountPC.RawValue % 100 != 0)
+                return string.Empty;
+
             string fileName = null;
 
             try
@@ -128,5 +145,6 @@ namespace Papercut.Message
 
             return fileName;
         }
+
     }
 }

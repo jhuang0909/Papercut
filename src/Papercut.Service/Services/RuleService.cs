@@ -71,12 +71,12 @@ namespace Papercut.Service.Services
                 "New Message {MessageFile} Arrived -- Running Rules",
                 @event.NewMessage);
 
-            Task.Factory.StartNew(
-                () =>
-                {
-                    Thread.Sleep(2000);
-                    _rulesRunner.Run(Rules.ToArray(), @event.NewMessage);
-                });
+            //Task.Factory.StartNew(
+            //    () =>
+            //    {
+            //        Thread.Sleep(2000);
+            //        _rulesRunner.Run(Rules.ToArray(), @event.NewMessage);
+            //    });
         }
 
         public void Handle(RulesUpdatedEvent @event)

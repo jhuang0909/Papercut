@@ -126,6 +126,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\PapercutServiceSettings.cs" />
+    <Compile Include="Services\BasicWebServiceHost.cs" />
+    <Compile Include="Services\PerfWebService.cs" />
     <Compile Include="Services\RuleService.cs" />
     <Compile Include="Services\PublishAppEventsToClientService.cs" />
     <Compile Include="PapercutServerModule.cs" />

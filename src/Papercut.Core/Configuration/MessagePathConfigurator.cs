@@ -151,6 +151,7 @@ namespace Papercut.Core.Configuration
 
             try
             {
+                // JHUANG, we may delete all existing emails here
                 if (!Directory.Exists(path)) Directory.CreateDirectory(path);
 
                 return true;

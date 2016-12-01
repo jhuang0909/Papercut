@@ -45,6 +45,8 @@ namespace Papercut.Service.Services
         readonly PapercutServiceSettings _serviceSettings;
 
         readonly IServer _smtpServer;
+        private PerfWebService _serviceInstance;
+        private BasicWebServiceHost _host;
 
         public PapercutServerService(
             Func<ServerProtocolType, IServer> serverFactory,
@@ -82,6 +84,13 @@ namespace Papercut.Service.Services
             _smtpServer.Listen(_serviceSettings.IP, _serviceSettings.Port);
         }
 
+        private void StartListenerWebService()
+        {
+            _serviceInstance = new PerfWebService(_logger);
+            _host = new BasicWebServiceHost(_serviceInstance, typeof(IPerfWebService));
+            _host.Start("PerfWebService", string.Format("http://{0}:9090/perf", Environment.MachineName));
+        }
+
         public void Start()
         {
             _publishEvent.Publish(
@@ -106,7 +115,7 @@ namespace Papercut.Service.Services
                     // on complete
                     () => { });
 
-            _smtpServer.BindObservable(_serviceSettings.IP,_serviceSettings.Port, TaskPoolScheduler.Default)
+            _smtpServer.BindObservable(_serviceSettings.IP, _serviceSettings.Port, TaskPoolScheduler.Default)
                 .DelaySubscription(TimeSpan.FromSeconds(1)).Retry(5)
                 .Subscribe(
                     (u) =>
@@ -122,10 +131,14 @@ namespace Papercut.Service.Services
                     () =>
                     _publishEvent.Publish(
                         new PapercutServiceReadyEvent { AppMeta = _applicationMetaData }));
+
+            PapercutPerformanceCounters.SetupCategory();
+            StartListenerWebService();
         }
 
         public void Stop()
         {
+            _host.Close();
             _smtpServer.Stop();
             _papercutServer.Stop();
             _publishEvent.Publish(new PapercutServiceExitEvent { AppMeta = _applicationMetaData });
