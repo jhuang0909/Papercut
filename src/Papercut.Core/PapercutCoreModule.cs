@@ -174,9 +174,10 @@ namespace Papercut.Core
             builder.Register(
                 c =>
                 {
-                    Log.Logger = c.Resolve<LoggerConfiguration>().CreateLogger();
+                   if(Log.Logger == null)
+                        Log.Logger = c.Resolve<LoggerConfiguration>().CreateLogger();
 
-                    return Log.Logger;
+                    return Log.ForContext("dummy", 1);
                 }).As<ILogger>();
         }
 
