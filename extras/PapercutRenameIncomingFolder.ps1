@@ -1,0 +1,1 @@
+﻿Rename-Item 'C:\CSL\PapercutService.4.6.1.12\Incoming' ('C:\CSL\PapercutService.4.6.1.12\Incoming ' + (Get-Date -Format "yyyyMMdd"))

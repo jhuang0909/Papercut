@@ -85,6 +85,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IdentityModel" />
     <Reference Include="System.IO">
       <HintPath>..\..\packages\Microsoft.Bcl.1.1.10\lib\net40\System.IO.dll</HintPath>
       <Private>True</Private>
@@ -128,6 +129,7 @@
   <ItemGroup>
     <Compile Include="Helpers\PapercutServiceSettings.cs" />
     <Compile Include="Services\BasicWebServiceHost.cs" />
+    <Compile Include="Services\CustomUserNameValidator.cs" />
     <Compile Include="Services\PerfWebService.cs" />
     <Compile Include="Services\RuleService.cs" />
     <Compile Include="Services\PublishAppEventsToClientService.cs" />

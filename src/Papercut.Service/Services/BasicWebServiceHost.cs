@@ -17,6 +17,9 @@ namespace Papercut.Service.Services
         private ServiceHost _host;
         private object _serviceObject;
         private Type _serviceInterface;
+        private bool _secure;
+
+        public bool UseExactMatchForLocalhost { get; private set; }
 
         public BasicWebServiceHost(object serviceObject, Type serviceInterface)
         {
@@ -34,6 +37,12 @@ namespace Papercut.Service.Services
             _serviceInterface = serviceInterface;
         }
 
+        public BasicWebServiceHost(object serviceObject, Type serviceInterface, bool secure) :
+    this(serviceObject, serviceInterface)
+        {
+            _secure = secure;
+        }
+
         public void Start(string serviceName, string serviceUri)
         {
             if (_host != null)
@@ -45,7 +54,35 @@ namespace Papercut.Service.Services
             Binding binding;
             if (uri.Scheme == Uri.UriSchemeHttp)
             {
-                binding = new BasicHttpBinding();
+                BasicHttpBinding httpBinding;
+
+                if (_secure)
+                {
+                    httpBinding = new BasicHttpBinding()
+                    {
+                        Security =
+                    {
+                        Mode = BasicHttpSecurityMode.TransportCredentialOnly,
+                        Transport =
+                        {
+                            ClientCredentialType = HttpClientCredentialType.Basic
+                        }
+                    }
+                    };
+                }
+                else
+                {
+                    httpBinding = new BasicHttpBinding();
+                }
+
+
+                if (uri.IsLoopback && UseExactMatchForLocalhost)
+                {
+                    // This allows us to open without any special admin premision for localhost.
+                    httpBinding.HostNameComparisonMode = HostNameComparisonMode.Exact;
+                }
+
+                binding = httpBinding;
             }
             else
             {
@@ -53,6 +90,13 @@ namespace Papercut.Service.Services
             }
 
             _host = new ServiceHost(_serviceObject);
+
+            if (_secure)
+            {
+                _host.Credentials.UserNameAuthentication.UserNamePasswordValidationMode = System.ServiceModel.Security.UserNamePasswordValidationMode.Custom;
+                _host.Credentials.UserNameAuthentication.CustomUserNamePasswordValidator = new CustomUserNameValidator();
+            }
+
             _host.AddServiceEndpoint(_serviceInterface, binding, uri);
 
             var smb = new ServiceMetadataBehavior() { HttpGetEnabled = true, HttpGetUrl = uri };

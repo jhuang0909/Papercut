@@ -87,7 +87,7 @@ namespace Papercut.Service.Services
         private void StartListenerWebService()
         {
             _serviceInstance = new PerfWebService(_logger);
-            _host = new BasicWebServiceHost(_serviceInstance, typeof(IPerfWebService));
+            _host = new BasicWebServiceHost(_serviceInstance, typeof(IPerfWebService), true);
             _host.Start("PerfWebService", string.Format("http://{0}:9090/perf", Environment.MachineName));
         }
 
